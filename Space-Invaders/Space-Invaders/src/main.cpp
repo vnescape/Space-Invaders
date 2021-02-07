@@ -1,5 +1,5 @@
 #include <iostream>
 
 int main(void) {
-	std::cout << "Hello space and time!" std::endl;
+	std::cout << "Hello space and time!" << std::endl;
 }
