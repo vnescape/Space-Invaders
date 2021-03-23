@@ -1,4 +1,5 @@
 //Source: https://www.glfw.org/documentation.html
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 int main(void)
