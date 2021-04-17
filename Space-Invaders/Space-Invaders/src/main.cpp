@@ -23,7 +23,7 @@ int main(void)
     glfwMakeContextCurrent(window);
 
     // Initialize GLEW after creating a valid OpenGL context
-    if (!glewInit())
+    if (glewInit() != 0)
         return -1;
 
     // Print current OpenGL  version
@@ -39,6 +39,10 @@ int main(void)
     glGenBuffers(1, &BufferID);
     glBindBuffer(GL_ARRAY_BUFFER, BufferID);
     glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+
+    // "stride" is a vertex attribute, whereas the "pointer" points into one vertex attribute
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    glEnableVertexAttribArray(0);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
