@@ -22,6 +22,10 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    // Initialize GLEW after creating a valid OpenGL context
+    if (!glewInit())
+        return -1;
+
     // Print current OpenGL  version
     std::cout << glGetString(GL_VERSION) << std::endl;
 
