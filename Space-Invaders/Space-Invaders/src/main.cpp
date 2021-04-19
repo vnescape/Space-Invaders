@@ -3,6 +3,58 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+static unsigned int CompileShader(unsigned int type, const std::string& source)
+{
+    // unsigned int = GLuint
+    // unsigned int is used here, so there are no abstractions by OpenGL
+    unsigned int id = glCreateShader(type);
+
+    // source.c_str() or &source[0]
+    const char* src = source.c_str();
+    glShaderSource(id, 1, &src, nullptr);
+    glCompileShader(id);
+
+    // debug code
+    int result;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    if (result == GL_FALSE)
+    {
+        int length;
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+
+        // don't use alloca() because of stack overflow excepcion,
+        // use on heap allocation instead
+        char* message = NULL;
+        message = new char[length];
+        glGetShaderInfoLog(id, length, &length, message);
+        std::cout << "Failed to compile shader" << std::endl;
+        std::cout << message << std::endl;
+        delete [] message;
+        glDeleteShader(id);
+        return 0;
+    }
+
+    return id;
+}
+
+static unsigned int CreateShader(const std::string& VertexShader, const std::string& FragmentShader)
+{
+    unsigned int program = glCreateProgram();
+    unsigned int vs = CompileShader(GL_VERTEX_SHADER, VertexShader);
+    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, FragmentShader);
+
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
+    glLinkProgram(program);
+    //glDetachShader();
+    glValidateProgram(program);
+
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+
+    return program;
+}
+
 int main(void)
 {
     GLFWwindow* window;
