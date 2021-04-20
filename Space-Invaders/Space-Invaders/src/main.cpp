@@ -1,7 +1,57 @@
 //Source: https://www.glfw.org/documentation.html
-#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <fstream>
+
+struct ShaderSource
+{
+    std::string VertexSource;
+    std::string FragmentSource;
+};
+
+// Parsing custom .shader files
+static ShaderSource ParseShader(const std::string& filepath)
+{
+
+    std::ifstream stream(filepath);
+
+    enum class ShaderType
+    {
+        // Using names to reference to indices in ss[]
+        NONE = -1, VERTEX = 0, FRAGMENT = 1
+    };
+
+    std::string line;
+    std::stringstream ss[2];
+    ShaderType type = ShaderType::NONE;
+    while (std::getline(stream, line))
+    {
+        // find magic string (parse header)
+        if (line.find("#shader") != std::string::npos)
+        {
+            if (line.find("vertex") != std::string::npos)
+            {
+                type = ShaderType::VERTEX;
+            }
+            else if (line.find("fragment") != std::string::npos)
+            {
+                type = ShaderType::FRAGMENT;
+            }
+        }
+        // parse content of source file if it isn't none
+        else
+        {
+            if (type != ShaderType::NONE)
+                ss[(int)type] << line << "\n";
+        }
+    }
+
+    return { ss[0].str(), ss[1].str() };
+}
 
 static unsigned int CompileShader(unsigned int type, const std::string& source)
 {
@@ -95,6 +145,13 @@ int main(void)
     // "stride" is a vertex attribute, whereas the "pointer" points into one vertex attribute
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
+
+    ShaderSource source = ParseShader("res/shaders/Generic.shader");
+    std::cout << source.VertexSource << std::endl;
+    std::cout << source.FragmentSource << std::endl;
+
+    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+    glUseProgram(shader);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
