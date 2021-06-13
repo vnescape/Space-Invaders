@@ -87,6 +87,7 @@ static unsigned int CompileShader(unsigned int type, const std::string& source)
     return id;
 }
 
+// Attaching shaders, compiling and linking them into a program which the GPU can execute
 static unsigned int CreateShader(const std::string& VertexShader, const std::string& FragmentShader)
 {
     unsigned int program = glCreateProgram();
@@ -144,29 +145,34 @@ int main(void)
         3, 2, 1,
         1, 3, 4,
     };
+
+    // Generating, binding and filling a buffer to be send to the GPU
     unsigned int BufferID;
     glGenBuffers(1, &BufferID);
     glBindBuffer(GL_ARRAY_BUFFER, BufferID);
-    glBufferData(GL_ARRAY_BUFFER, 10 * sizeof(float), positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 
     // "stride" is a vertex attribute, whereas the "pointer" points into one vertex attribute
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
 
+    // Creating and using a index buffer to refrence vertecis and avoid duplicates
     unsigned int ibo;
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 9 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
+    // loading the shader
     ShaderSource source = ParseShader("res/shaders/Triangle.shader");
     std::cout << source.VertexSource << std::endl;
     std::cout << source.FragmentSource << std::endl;
 
+    // compiling a program based on the shader
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
     glUseProgram(shader);
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
