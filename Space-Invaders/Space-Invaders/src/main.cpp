@@ -9,6 +9,30 @@
 
 #include "shader.h"
 
+// Assert for breaking debugger in code. "__debugbreak" specific for MSVC
+#define ASSERT(x) if (!(x)) __debugbreak();
+
+// Wrap a function around error checking
+// "#x" passes the function name as a string
+#define GLCall(x) GLClearError(); x;\
+ASSERT(GLLogError(#x, __FILE__, __LINE__));
+
+static void GLClearError()
+{
+    while (glGetError() != GL_NO_ERROR);
+}
+
+static bool GLLogError(const char* function, const char* file, int line)
+{
+    while (GLenum error = glGetError())
+    {
+        std::cout << "[OpenGL Error] (" << error << ")" << 
+        " " << file << ":"<< line << std::endl;
+        return false;
+    }
+    return true;
+}
+
 int main(void)
 {
     GLFWwindow* window;
@@ -51,42 +75,46 @@ int main(void)
 
     // Generating, binding and filling a buffer to be send to the GPU
     unsigned int BufferID;
-    glGenBuffers(1, &BufferID);
-    glBindBuffer(GL_ARRAY_BUFFER, BufferID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+    GLCall(glGenBuffers(1, &BufferID));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, BufferID));
+    GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW));
 
     // "stride" is a vertex attribute, whereas the "pointer" points into one vertex attribute
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
-    glEnableVertexAttribArray(0);
+    GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
+    GLCall(glEnableVertexAttribArray(0));
 
     // Creating and using a index buffer to refrence vertecis and avoid duplicates
     unsigned int ibo;
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 9 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    GLCall(glGenBuffers(1, &ibo));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 9 * sizeof(unsigned int), indices, GL_STATIC_DRAW));
 
     // loading the shader
     ShaderSource source = ParseShader("res/shaders/Triangle.shader");
+
+    /* Print Source for debugging
     std::cout << source.VertexSource << std::endl;
     std::cout << source.FragmentSource << std::endl;
+    */
 
     // compiling a program based on the shader
-    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-    glUseProgram(shader);
+    GLCall(unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource));
+    GLCall(glUseProgram(shader));
+
 
     /* Loop until the user closes the window */
     while(!glfwWindowShouldClose(window))
     {
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
-        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr);
+        GLCall(glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr));
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        GLCall(glfwSwapBuffers(window));
 
         /* Poll for and process events */
-        glfwPollEvents();
+        GLCall(glfwPollEvents());
     }
 
     glfwTerminate();
