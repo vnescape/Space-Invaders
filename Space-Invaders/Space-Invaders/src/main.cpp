@@ -52,6 +52,9 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    // turns on vsync
+    glfwSwapInterval(1);
+
     // Initialize GLEW after creating a valid OpenGL context
     if (glewInit() != 0)
         return -1;
