@@ -105,16 +105,32 @@ int main(void)
     // retrieves the id of the variable "u_Color"
     GLCall(int u_location = glGetUniformLocation(shader, "u_Color"));
     ASSERT(u_location != -1);
-    // define variable
+    // define variable "u_Color"
     GLCall(glUniform4f(u_location, 0.0, 1.0, 0.0, 1.0));
 
+    float b = 0.0f;
+    float r = 0.0f;
+    float increment = 0.05f;
     /* Loop until the user closes the window */
     while(!glfwWindowShouldClose(window))
     {
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
+        // modifies the "u_color" variable every frame
+        GLCall(glUniform4f(u_location, r, 1.0, b, 1.0));
         GLCall(glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr));
+
+        if (b > 1.0f || r > 1.0f)
+        {
+            b = 0;
+            r = 0;
+        }
+        else
+        {
+            b += increment;
+            r += increment;
+        }
 
         /* Swap front and back buffers */
         GLCall(glfwSwapBuffers(window));
