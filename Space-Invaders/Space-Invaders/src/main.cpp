@@ -99,8 +99,14 @@ int main(void)
 
     // compiling a program based on the shader
     GLCall(unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource));
+    // bound the shader, so that the uniform will be applied to this shader
     GLCall(glUseProgram(shader));
 
+    // retrieves the id of the variable "u_Color"
+    GLCall(int u_location = glGetUniformLocation(shader, "u_Color"));
+    ASSERT(u_location != -1);
+    // define variable
+    GLCall(glUniform4f(u_location, 0.0, 1.0, 0.0, 1.0));
 
     /* Loop until the user closes the window */
     while(!glfwWindowShouldClose(window))
