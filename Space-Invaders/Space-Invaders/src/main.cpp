@@ -80,6 +80,11 @@ int main(void)
         1, 3, 4,
     };
 
+    // Using a vertex array buffer to specify its attributes and layout
+    unsigned int vao;
+    GLCall(glGenVertexArrays(1, &vao));
+    GLCall(glBindVertexArray(vao));
+
     // Generating, binding and filling a buffer to be send to the GPU
     unsigned int BufferID;
     GLCall(glGenBuffers(1, &BufferID));
@@ -87,7 +92,9 @@ int main(void)
     GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW));
 
     // "stride" is a vertex attribute, whereas the "pointer" points into one vertex attribute
+    // glVertexAttribPointer() links "BufferID" with "vao"
     GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
+    // Enable or disable a generic vertex attribute array
     GLCall(glEnableVertexAttribArray(0));
 
     // Creating and using a index buffer to refrence vertecis and avoid duplicates
