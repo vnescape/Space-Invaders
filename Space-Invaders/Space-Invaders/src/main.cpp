@@ -7,7 +7,7 @@
 #include <sstream>
 #include <fstream>
 
-#include "shader.h"
+#include "Shader.h"
 #include "Renderer.h"
 
 int main(void)
