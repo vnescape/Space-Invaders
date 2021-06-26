@@ -13,7 +13,6 @@ struct ShaderSource
     std::string FragmentSource;
 };
 
-
 ShaderSource ParseShader(const std::string& filepath);
 unsigned int CompileShader(unsigned int type, const std::string& source);
 unsigned int CreateShader(const std::string& VertexShader, const std::string& FragmentShader);
