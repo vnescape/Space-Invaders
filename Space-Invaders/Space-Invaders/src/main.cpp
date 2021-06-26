@@ -85,7 +85,7 @@ int main(void)
     GLCall(glGenVertexArrays(1, &vao));
     GLCall(glBindVertexArray(vao));
 
-    // Generating, binding and filling a buffer to be send to the GPU
+    // Generating, binding and filling a buffer to be send to the GPU (Vertex Buffer)
     unsigned int BufferID;
     GLCall(glGenBuffers(1, &BufferID));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, BufferID));
@@ -97,7 +97,7 @@ int main(void)
     // Enable or disable a generic vertex attribute array
     GLCall(glEnableVertexAttribArray(0));
 
-    // Creating and using a index buffer to refrence vertecis and avoid duplicates
+    // Creating and using a index buffer to refrence vertecis and avoid duplicates (Index Buffer)
     unsigned int ibo;
     GLCall(glGenBuffers(1, &ibo));
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
@@ -124,7 +124,7 @@ int main(void)
 
     float b = 0.0f;
     float r = 0.0f;
-    float increment = 0.05f;
+    float increment = 0.0f;
     /* Loop until the user closes the window */
     while(!glfwWindowShouldClose(window))
     {
@@ -135,16 +135,16 @@ int main(void)
         GLCall(glUniform4f(u_location, r, 1.0, b, 1.0));
         GLCall(glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr));
 
-        if (b > 1.0f || r > 1.0f)
+        if (r <= 0.0f || b <= 0.0f)
         {
-            b = 0;
-            r = 0;
+            increment = 0.005;
         }
-        else
+        else if (r >= 1.0f || b >= 1.0f)
         {
-            b += increment;
-            r += increment;
+            increment = -0.005;
         }
+        b += increment;
+        r += increment;
 
         /* Swap front and back buffers */
         GLCall(glfwSwapBuffers(window));
