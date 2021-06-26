@@ -8,30 +8,7 @@
 #include <fstream>
 
 #include "shader.h"
-
-// Assert for breaking debugger in code. "__debugbreak" specific for MSVC
-#define ASSERT(x) if (!(x)) __debugbreak();
-
-// Wrap a function around error checking
-// "#x" passes the function name as a string
-#define GLCall(x) GLClearError(); x;\
-ASSERT(GLLogError(#x, __FILE__, __LINE__));
-
-static void GLClearError()
-{
-    while (glGetError() != GL_NO_ERROR);
-}
-
-static bool GLLogError(const char* function, const char* file, int line)
-{
-    while (GLenum error = glGetError())
-    {
-        std::cout << "[OpenGL Error] (" << error << ")" << 
-        " " << file << ":"<< line << std::endl;
-        return false;
-    }
-    return true;
-}
+#include "Renderer.h"
 
 int main(void)
 {
