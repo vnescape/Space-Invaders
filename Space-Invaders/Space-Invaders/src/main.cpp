@@ -45,88 +45,90 @@ int main(void)
     // Print current OpenGL  version
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    float positions[] = {
-        -0.5f, -0.5f,
-        -0.5f,  0.5f,
-         0.5f, -0.5f,
-         0.5f,  0.5f,
-         0.0f,  0.9f,
-    };
-
-    unsigned int indices[] = {
-        0, 1, 2,
-        3, 2, 1,
-        1, 3, 4,
-    };
-
-    // Using a vertex array buffer to specify its attributes and layout
-    unsigned int vao;
-    GLCall(glGenVertexArrays(1, &vao));
-    GLCall(glBindVertexArray(vao));
-
-    // Generate, bind and fill VertexBuffer
-    VertexBuffer vb(positions, sizeof(positions));
-
-    
-    // "stride" is a vertex attribute, whereas the "pointer" points into one vertex attribute
-    // glVertexAttribPointer() links "BufferID" with "vao"
-    GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
-    // Enable or disable a generic vertex attribute array
-    GLCall(glEnableVertexAttribArray(0));
-
-    // Creating and using a index buffer to refrence vertecis and avoid duplicates (Index Buffer)
-    IndexBuffer ib(indices, sizeof(indices));
-    
-    // loading the shader
-    ShaderSource source = ParseShader("res/shaders/Triangle.shader");
-
-    /* Print Source for debugging
-    std::cout << source.VertexSource << std::endl;
-    std::cout << source.FragmentSource << std::endl;
-    */
-
-    // compiling a program based on the shader
-    GLCall(unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource));
-    // bound the shader, so that the uniform will be applied to this shader
-    GLCall(glUseProgram(shader));
-
-    // retrieves the id of the variable "u_Color"
-    GLCall(int u_location = glGetUniformLocation(shader, "u_Color"));
-    ASSERT(u_location != -1);
-    // define variable "u_Color"
-    GLCall(glUniform4f(u_location, 0.0, 1.0, 0.0, 1.0));
-
-    float b = 0.0f;
-    float r = 0.0f;
-    float increment = 0.0f;
-    /* Loop until the user closes the window */
-    while(!glfwWindowShouldClose(window))
+    // define scope to clear stack before terminating glfw context
     {
-        /* Render here */
-        GLCall(glClear(GL_COLOR_BUFFER_BIT));
+        float positions[] = {
+            -0.5f, -0.5f,
+            -0.5f,  0.5f,
+             0.5f, -0.5f,
+             0.5f,  0.5f,
+             0.0f,  0.9f,
+        };
 
-        // modifies the "u_color" variable every frame
-        GLCall(glUniform4f(u_location, r, 1.0, b, 1.0));
-        GLCall(glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr));
+        unsigned int indices[] = {
+            0, 1, 2,
+            3, 2, 1,
+            1, 3, 4,
+        };
 
-        if (r <= 0.0f || b <= 0.0f)
+        // Using a vertex array buffer to specify its attributes and layout
+        unsigned int vao;
+        GLCall(glGenVertexArrays(1, &vao));
+        GLCall(glBindVertexArray(vao));
+
+        // Generate, bind and fill VertexBuffer
+        VertexBuffer vb(positions, sizeof(positions));
+
+
+        // "stride" is a vertex attribute, whereas the "pointer" points into one vertex attribute
+        // glVertexAttribPointer() links "BufferID" with "vao"
+        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
+        // Enable or disable a generic vertex attribute array
+        GLCall(glEnableVertexAttribArray(0));
+
+        // Creating and using a index buffer to refrence vertecis and avoid duplicates (Index Buffer)
+        IndexBuffer ib(indices, sizeof(indices));
+
+        // loading the shader
+        ShaderSource source = ParseShader("res/shaders/Triangle.shader");
+
+        /* Print Source for debugging
+        std::cout << source.VertexSource << std::endl;
+        std::cout << source.FragmentSource << std::endl;
+        */
+
+        // compiling a program based on the shader
+        GLCall(unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource));
+        // bound the shader, so that the uniform will be applied to this shader
+        GLCall(glUseProgram(shader));
+
+        // retrieves the id of the variable "u_Color"
+        GLCall(int u_location = glGetUniformLocation(shader, "u_Color"));
+        ASSERT(u_location != -1);
+        // define variable "u_Color"
+        GLCall(glUniform4f(u_location, 0.0, 1.0, 0.0, 1.0));
+
+        float b = 0.0f;
+        float r = 0.0f;
+        float increment = 0.0f;
+        /* Loop until the user closes the window */
+        while (!glfwWindowShouldClose(window))
         {
-            increment = 0.005;
-        }
-        else if (r >= 1.0f || b >= 1.0f)
-        {
-            increment = -0.005;
-        }
-        b += increment;
-        r += increment;
+            /* Render here */
+            GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
-        /* Swap front and back buffers */
-        GLCall(glfwSwapBuffers(window));
+            // modifies the "u_color" variable every frame
+            GLCall(glUniform4f(u_location, r, 1.0, b, 1.0));
+            GLCall(glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr));
 
-        /* Poll for and process events */
-        GLCall(glfwPollEvents());
+            if (r <= 0.0f || b <= 0.0f)
+            {
+                increment = 0.005;
+            }
+            else if (r >= 1.0f || b >= 1.0f)
+            {
+                increment = -0.005;
+            }
+            b += increment;
+            r += increment;
+
+            /* Swap front and back buffers */
+            GLCall(glfwSwapBuffers(window));
+
+            /* Poll for and process events */
+            GLCall(glfwPollEvents());
+        }
     }
-
     glfwTerminate();
     return 0;
 }
