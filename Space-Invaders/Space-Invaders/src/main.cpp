@@ -10,6 +10,7 @@
 #include "Shader.h"
 #include "Renderer.h"
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 int main(void)
 {
@@ -63,6 +64,7 @@ int main(void)
     GLCall(glGenVertexArrays(1, &vao));
     GLCall(glBindVertexArray(vao));
 
+    // Generate, bind and fill VertexBuffer
     VertexBuffer vb(positions, sizeof(positions));
 
     
@@ -73,11 +75,8 @@ int main(void)
     GLCall(glEnableVertexAttribArray(0));
 
     // Creating and using a index buffer to refrence vertecis and avoid duplicates (Index Buffer)
-    unsigned int ibo;
-    GLCall(glGenBuffers(1, &ibo));
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 9 * sizeof(unsigned int), indices, GL_STATIC_DRAW));
-
+    IndexBuffer ib(indices, sizeof(indices));
+    
     // loading the shader
     ShaderSource source = ParseShader("res/shaders/Triangle.shader");
 
