@@ -16,6 +16,6 @@
 
 int main(void)
 {
-    Game(640, 480);
+    Game::Game(640, 480);
     return 0;
 }

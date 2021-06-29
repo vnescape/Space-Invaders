@@ -1,7 +1,15 @@
 #include "Shader.h"
 
+Shader::Shader()
+{
+}
+
+Shader::~Shader()
+{
+}
+
 // Parsing custom ".shader" files
-ShaderSource ParseShader(const std::string& filepath)
+ShaderSource Shader::ParseShader(const std::string& filepath)
 {
 
     std::ifstream stream(filepath);
@@ -40,7 +48,7 @@ ShaderSource ParseShader(const std::string& filepath)
     return { ss[0].str(), ss[1].str() };
 }
 
-unsigned int CompileShader(unsigned int type, const std::string& source)
+unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {
     // unsigned int = GLuint
     // unsigned int is used here, so there are no abstractions by OpenGL
@@ -75,7 +83,7 @@ unsigned int CompileShader(unsigned int type, const std::string& source)
 }
 
 // Attaching shaders, compiling and linking them into a program which the GPU can execute
-unsigned int CreateShader(const std::string& VertexShader, const std::string& FragmentShader)
+unsigned int Shader::CreateShader(const std::string& VertexShader, const std::string& FragmentShader)
 {
     unsigned int program = glCreateProgram();
     unsigned int vs = CompileShader(GL_VERTEX_SHADER, VertexShader);

@@ -12,16 +12,17 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
-enum GameState {
-	GAMEPLAY,
-	MENU,
-	WIN,
-};
+
 
 class Game
 {
 private:
 	GLFWwindow* window;
+	enum GameState {
+		GAMEPLAY,
+		MENU,
+		WIN,
+	};
 public:
 	GameState m_State;
 	unsigned int m_Width, m_Height;
@@ -29,7 +30,7 @@ public:
 	Game(unsigned int width, unsigned int height);
 	~Game();
 	int Init();
-	void ProcessInput();
-	void UpdateState();
+	void ProcessInput(float deltaTime);
+	void UpdateState(float deltaTime);
 	void Render();
 };

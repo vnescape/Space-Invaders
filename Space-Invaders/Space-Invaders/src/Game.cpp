@@ -45,11 +45,11 @@ int Game::Init()
     return 1;
 }
 
-void Game::ProcessInput()
+void Game::ProcessInput(float deltaTime)
 {
 }
 
-void Game::UpdateState()
+void Game::UpdateState(float deltaTime)
 {
 }
 
@@ -89,20 +89,17 @@ void Game::Render()
     IndexBuffer ib(indices, sizeof(indices));
 
     // loading the shader
-    ShaderSource source = ParseShader("res/shaders/Triangle.shader");
-
-    /* Print Source for debugging
-    std::cout << source.VertexSource << std::endl;
-    std::cout << source.FragmentSource << std::endl;
-    */
+    Shader shader;
+    shader.ShaderSrc = shader.ParseShader("res/shaders/Triangle.shader");
 
     // compiling a program based on the shader
-    GLCall(unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource));
+    GLCall(shader.program = shader.CreateShader(shader.ShaderSrc.VertexSource,\
+                                                shader.ShaderSrc.FragmentSource));
     // bound the shader, so that the uniform will be applied to this shader
-    GLCall(glUseProgram(shader));
+    GLCall(glUseProgram(shader.program));
 
     // retrieves the id of the variable "u_Color"
-    GLCall(int u_location = glGetUniformLocation(shader, "u_Color"));
+    GLCall(int u_location = glGetUniformLocation(shader.program, "u_Color"));
     ASSERT(u_location != -1);
     // define variable "u_Color"
     GLCall(glUniform4f(u_location, 0.0, 1.0, 0.0, 1.0));
@@ -122,11 +119,11 @@ void Game::Render()
 
         if (r <= 0.0f || b <= 0.0f)
         {
-            increment = 0.005;
+            increment = 0.005f;
         }
         else if (r >= 1.0f || b >= 1.0f)
         {
-            increment = -0.005;
+            increment = -0.005f;
         }
         b += increment;
         r += increment;
