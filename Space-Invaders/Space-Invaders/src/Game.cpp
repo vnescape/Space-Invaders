@@ -137,5 +137,6 @@ void Game::Render()
         /* Poll for and process events */
         GLCall(glfwPollEvents());
     }
+    glfwTerminate();
 }
 
