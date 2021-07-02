@@ -70,20 +70,13 @@ void Game::Render()
         1, 3, 4,
     };
 
-    // Using a vertex array buffer to specify its attributes and layout
-    unsigned int vao;
-    GLCall(glGenVertexArrays(1, &vao));
-    GLCall(glBindVertexArray(vao));
+    VertexArray va;
 
     // Generate, bind and fill VertexBuffer
     VertexBuffer vb(positions, sizeof(positions));
-
-
-    // "stride" is a vertex attribute, whereas the "pointer" points into one vertex attribute
-    // glVertexAttribPointer() links "BufferID" with "vao"
-    GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
-    // Enable or disable a generic vertex attribute array
-    GLCall(glEnableVertexAttribArray(0));
+    VertexBufferLayout layout;
+    layout.Push<float>(2);
+    va.AddBuffer(vb, layout);
 
     // Creating and using a index buffer to refrence vertecis and avoid duplicates (Index Buffer)
     IndexBuffer ib(indices, sizeof(indices));
@@ -115,6 +108,10 @@ void Game::Render()
 
         // modifies the "u_color" variable every frame
         GLCall(glUniform4f(u_location, r, 1.0, b, 1.0));
+
+        va.Bind();
+        ib.Bind();
+
         GLCall(glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr));
 
         if (r <= 0.0f || b <= 0.0f)
